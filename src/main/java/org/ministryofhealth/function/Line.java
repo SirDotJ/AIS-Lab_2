@@ -1,4 +1,4 @@
-package org.ministryofhealth.structure;
+package org.ministryofhealth.function;
 
 public class Line {
 	private final Point start;

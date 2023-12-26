@@ -1,14 +1,12 @@
-package org.ministryofhealth.marks;
-
-import org.ministryofhealth.factory.PointListFactory;
-import org.ministryofhealth.structure.LineCompositeFormula;
+package org.ministryofhealth.fuzzylogic.mark;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class MarkD extends Mark {
-    private static final List<Double[]> points = new ArrayList<>(Arrays.asList(
+    // Выведено при помощи экспертной оценки терма "D" в файле "Экспертный анализ термов оценок.xlsx"
+    private static final List<Double[]> markDNormalizedCoefficients = new ArrayList<>(Arrays.asList(
             new Double[] {0d, 0.15165},
             new Double[] {3d, 0.35521},
             new Double[] {9d, 0.63123},
@@ -28,15 +26,13 @@ public class MarkD extends Mark {
             new Double[] {93d, 0.00691},
             new Double[] {100d, 0.00421}
     ));
-    private static LineCompositeFormula formula = new LineCompositeFormula(PointListFactory.makeList(points));
 
-    public static double judge(double points) {
-        return formula.get(points);
+    public MarkD() {
+        super(markDNormalizedCoefficients);
     }
-    public static String resultStr() {
+
+    @Override
+    public String meaning() {
         return "D - Плохие знания";
-    }
-    public static double deservedBonus() {
-        return 0;
     }
 }

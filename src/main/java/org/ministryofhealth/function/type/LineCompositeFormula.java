@@ -1,4 +1,7 @@
-package org.ministryofhealth.structure;
+package org.ministryofhealth.function.type;
+
+import org.ministryofhealth.function.Line;
+import org.ministryofhealth.function.Point;
 
 import java.util.ArrayList;
 import java.util.List;

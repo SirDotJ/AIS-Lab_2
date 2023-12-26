@@ -1,6 +1,6 @@
 package org.ministryofhealth.factory;
 
-import org.ministryofhealth.structure.Point;
+import org.ministryofhealth.function.Point;
 
 import java.util.ArrayList;
 import java.util.List;

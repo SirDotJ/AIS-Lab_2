@@ -1,13 +1,8 @@
-package org.ministryofhealth.structure;
+package org.ministryofhealth.function;
 
 public class RestrictedPoint extends Point {
 	private final Range xRestriction;
 	private final Range yRestriction;
-	public RestrictedPoint(double x, double y) {
-		super(x, y);
-		this.xRestriction = null;
-		this.yRestriction = null;
-	}
 	public RestrictedPoint(double x, double y, Range xRestriction, Range yRestriction) throws IllegalArgumentException {
 		super(x, y);
 
