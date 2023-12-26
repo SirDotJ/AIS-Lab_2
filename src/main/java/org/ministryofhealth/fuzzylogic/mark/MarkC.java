@@ -32,6 +32,6 @@ public class MarkC extends Mark {
 
     @Override
     public String meaning() {
-        return "Средние знания";
+        return "С - Средние знания";
     }
 }

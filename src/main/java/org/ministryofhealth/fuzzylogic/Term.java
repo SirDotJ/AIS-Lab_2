@@ -3,12 +3,15 @@ package org.ministryofhealth.fuzzylogic;
 import org.ministryofhealth.factory.PointListFactory;
 import org.ministryofhealth.function.type.LineCompositeFormula;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Term {
-	protected LineCompositeFormula formula;
-	protected Term(List<Double[]> points) {
-		this.formula = new LineCompositeFormula(PointListFactory.makeList(points));
+	private final List<Double[]> points;
+	protected final LineCompositeFormula formula;
+	public Term(List<Double[]> points) {
+		this.points = points;
+		this.formula = new LineCompositeFormula(PointListFactory.makeList(this.points));
 	}
 
 	public double judge(double point) {
@@ -16,31 +19,104 @@ public abstract class Term {
 	}
 	public abstract String meaning();
 
-	public double unification(Term other, double point) {
-		return Math.max(this.judge(point), other.judge(point));
+	private Term constructTerm(List<Double[]> points) {
+		return new Term(points) {
+				@Override
+				public String meaning() {
+					return "Undefined";
+				}
+			};
 	}
-	public double interference(Term other, double point) {
-		return Math.min(this.judge(point), other.judge(point));
+
+	public boolean moreProminentThan(List<Term> terms, double point) {
+		Term ultimateTerm = terms.get(0);
+		for (int i = 1; i < terms.size(); i++) {
+			ultimateTerm = ultimateTerm.unification(terms.get(i));
+		}
+		return this.judge(point) >= ultimateTerm.judge(point);
 	}
-	public double difference(Term other, double point) {
-		return Math.max(this.judge(point) - other.judge(point), 0);
+	public boolean moreProminentThan(Term[] terms, double point) {
+		Term ultimateTerm = terms[0];
+		for (int i = 1; i < terms.length; i++) {
+			ultimateTerm = ultimateTerm.unification(terms[i]);
+		}
+		return this.judge(point) >= ultimateTerm.judge(point);
 	}
-	public double negation(double point) {
-		return 1 - this.judge(point);
+
+	public Term unification(Term other) {
+		List<Double[]> newPoints = new ArrayList<>();
+		for (Double[] point : this.points) {
+			Double[] newPoint = new Double[2];
+			newPoint[0] = point[0];
+			newPoint[1] = Math.max(this.judge(point[0]), other.judge(point[0]));
+			newPoints.add(newPoint);
+		}
+		return this.constructTerm(newPoints);
 	}
-	public double sum(Term other, double point) {
-		return Math.min(1, this.judge(point) + other.judge(point));
+	public Term interference(Term other) {
+		List<Double[]> newPoints = new ArrayList<>();
+		for (Double[] point : this.points) {
+			Double[] newPoint = new Double[2];
+			newPoint[0] = point[0];
+			newPoint[1] = Math.min(this.judge(point[0]), other.judge(point[0]));
+			newPoints.add(newPoint);
+		}
+		return this.constructTerm(newPoints);
 	}
-	public double multiplication(Term other, double point) {
-		return this.judge(point) * other.judge(point);
+	public Term difference(Term other) {
+		List<Double[]> newPoints = new ArrayList<>();
+		for (Double[] point : this.points) {
+			Double[] newPoint = new Double[2];
+			newPoint[0] = point[0];
+			newPoint[1] = Math.max(this.judge(point[0]) - other.judge(point[0]), 0);
+			newPoints.add(newPoint);
+		}
+		return this.constructTerm(newPoints);
 	}
-	public double power(double power, double point) {
-		return Math.pow(this.judge(point), power);
+	public Term negation() {
+		List<Double[]> newPoints = new ArrayList<>();
+		for (Double[] point : this.points) {
+			Double[] newPoint = new Double[2];
+			newPoint[0] = point[0];
+			newPoint[1] = 1 - this.judge(point[0]);
+			newPoints.add(newPoint);
+		}
+		return this.constructTerm(newPoints);
 	}
-	public double narrow(double point) {
-		return this.power(2, point);
+	public Term sum(Term other) {
+		List<Double[]> newPoints = new ArrayList<>();
+		for (Double[] point : this.points) {
+			Double[] newPoint = new Double[2];
+			newPoint[0] = point[0];
+			newPoint[1] = Math.min(1, this.judge(point[0]) + other.judge(point[0]));
+			newPoints.add(newPoint);
+		}
+		return this.constructTerm(newPoints);
 	}
-	public double broad(double point) {
-		return this.power(0.5, point);
+	public Term multiplication(Term other) {
+		List<Double[]> newPoints = new ArrayList<>();
+		for (Double[] point : this.points) {
+			Double[] newPoint = new Double[2];
+			newPoint[0] = point[0];
+			newPoint[1] = this.judge(point[1]) * other.judge(point[0]);
+			newPoints.add(newPoint);
+		}
+		return this.constructTerm(newPoints);
+	}
+	public Term power(double power) {
+		List<Double[]> newPoints = new ArrayList<>();
+		for (Double[] point : this.points) {
+			Double[] newPoint = new Double[2];
+			newPoint[0] = point[0];
+			newPoint[1] = Math.pow(this.judge(point[0]), power);
+			newPoints.add(newPoint);
+		}
+		return this.constructTerm(newPoints);
+	}
+	public Term narrow() {
+		return this.power(2);
+	}
+	public Term broad() {
+		return this.power(0.5);
 	}
 }
